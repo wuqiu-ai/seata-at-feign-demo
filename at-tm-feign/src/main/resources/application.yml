@@ -1,0 +1,50 @@
+server:
+  port: 8082
+  tomcat:
+    max-threads: 500
+
+spring:
+  application:
+    name: seata-at-tm-feign
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    inetutils:
+      ignoredInterfaces: //匹配正则表达式忽略
+        - docker0
+    loadbalancer:
+      retry:
+        enabled: false
+
+ribbon:
+  ConnectTimeout: 100000
+  ReadTimeout: 1000000
+  OkToRetryOnAllOperations: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.202.1:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+
+#====================================Seata Config===============================================
+## Seata接入
+seata:
+  # 关闭自动代理
+  enable-auto-data-source-proxy: false
+  ## 配置中心采用apollo
+  config:
+    type: apollo
+    apollo:
+      apollo-meta: http://192.168.202.1
+      app-id: seata-demo
+      namespace: framework.seata-common
+  ## 注册中心采用redis
+  registry:
+    type: eureka
+    eureka:
+      application: seata-server
+      service-url: http://192.168.202.1:8761/eureka
+  tx-service-group: my_test_tx_group
